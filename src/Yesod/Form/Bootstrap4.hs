@@ -128,34 +128,34 @@ renderGroupInput view' formLayout =
       isInvalid = isJust (fvErrors view)
   in
   [whamlet|
-  <div_ :isInvalid:.is-invalid>
-  $case formLayout
-    $of BootstrapBasicForm
-      $if fvId view /= bootstrapSubmitId
-        <label for=#{fvId view}>#{fvLabel view}
-      ^{fvInput view}
-      ^{helpWidget view}
-    $of BootstrapInlineForm
-      $if fvId view /= bootstrapSubmitId
-        <label .sr-only for=#{fvId view}>#{fvLabel view}
-      ^{fvInput view}
-      ^{helpWidget view}
-    $of BootstrapHorizontalForm labelOffset labelSize inputOffset inputSize
-      $if fvId view /= bootstrapSubmitId
-        <div .row>
-          <label
-            .#{toOffset labelOffset}
-            .#{toColumn labelSize}
-            for=#{fvId view}>#{fvLabel view}
-          <div .#{toOffset inputOffset} .#{toColumn inputSize}>
+  <div :isInvalid:.is-invalid>
+    $case formLayout
+      $of BootstrapBasicForm
+        $if fvId view /= bootstrapSubmitId
+          <label for=#{fvId view}>#{fvLabel view}
+        ^{fvInput view}
+        ^{helpWidget view}
+      $of BootstrapInlineForm
+        $if fvId view /= bootstrapSubmitId
+          <label .sr-only for=#{fvId view}>#{fvLabel view}
+        ^{fvInput view}
+        ^{helpWidget view}
+      $of BootstrapHorizontalForm labelOffset labelSize inputOffset inputSize
+        $if fvId view /= bootstrapSubmitId
+          <div .row>
+            <label
+              .#{toOffset labelOffset}
+              .#{toColumn labelSize}
+              for=#{fvId view}>#{fvLabel view}
+            <div .#{toOffset inputOffset} .#{toColumn inputSize}>
+              ^{fvInput view}
+              ^{helpWidget view}
+        $else
+          <div
+            .#{toOffset (addGO inputOffset (addGO labelOffset labelSize))}
+            .#{toColumn inputSize}>
             ^{fvInput view}
             ^{helpWidget view}
-      $else
-        <div
-          .#{toOffset (addGO inputOffset (addGO labelOffset labelSize))}
-          .#{toColumn inputSize}>
-          ^{fvInput view}
-          ^{helpWidget view}
   |]
 
 -- | 入力されたフィールドがcheck形式である必要があるか判定する
