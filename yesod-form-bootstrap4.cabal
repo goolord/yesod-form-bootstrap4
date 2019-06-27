@@ -1,0 +1,41 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 237c3297cfd57b5caddc780050d5606ee0cfe2950845c3aae270952cfd299557
+
+name:           yesod-form-bootstrap4
+version:        2.1.2
+synopsis:       renderBootstrap4
+category:       Web
+homepage:       https://github.com/ncaq/yesod-form-bootstrap4#readme
+bug-reports:    https://github.com/ncaq/yesod-form-bootstrap4/issues
+author:         ncaq
+maintainer:     ncaq@ncaq.net
+copyright:      © ncaq
+license:        MIT
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/ncaq/yesod-form-bootstrap4
+
+library
+  exposed-modules:
+      Yesod.Form.Bootstrap4
+  other-modules:
+      Paths_yesod_form_bootstrap4
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-home-modules -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , blaze-html
+    , blaze-markup
+    , shakespeare
+    , text
+    , yesod-core
+    , yesod-form
+  default-language: Haskell2010
