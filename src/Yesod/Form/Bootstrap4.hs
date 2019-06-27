@@ -22,6 +22,7 @@ module Yesod.Form.Bootstrap4
   , BootstrapSubmit(..)
   ) where
 
+import           Data.Maybe                    (isJust)
 import           Control.Arrow                 (second)
 import           Data.String                   (IsString (..))
 import           Data.Text                     (Text)
@@ -113,42 +114,49 @@ $forall view <- views
 -- FIXME: `.form-check-input`を`input`につける方法がわからない
 renderCheckInput :: FieldView site -> WidgetFor site ()
 renderCheckInput view = [whamlet|
-<div .form-check (fvErrors view):.is-invalid>
+<div .form-check :isJust (fvErrors view):.is-invalid>
   ^{fvInput view}
   <label .form-check-label for=#{fvId view}>
   ^{helpWidget view}
 |]
 
 renderGroupInput :: FieldView site -> BootstrapFormLayout -> WidgetFor site ()
-renderGroupInput view formLayout = [whamlet|
-$case formLayout
-  $of BootstrapBasicForm
-    $if fvId view /= bootstrapSubmitId
-      <label for=#{fvId view}>#{fvLabel view}
-    ^{fvInput view}
-    ^{helpWidget view}
-  $of BootstrapInlineForm
-    $if fvId view /= bootstrapSubmitId
-      <label .sr-only for=#{fvId view}>#{fvLabel view}
-    ^{fvInput view}
-    ^{helpWidget view}
-  $of BootstrapHorizontalForm labelOffset labelSize inputOffset inputSize
-    $if fvId view /= bootstrapSubmitId
-      <div .row>
-        <label
-          .#{toOffset labelOffset}
-          .#{toColumn labelSize}
-          for=#{fvId view}>#{fvLabel view}
-        <div .#{toOffset inputOffset} .#{toColumn inputSize}>
+renderGroupInput view' formLayout =
+  let view = case fvErrors view' of
+        Nothing -> view'
+        Just _ -> view' { fvInput = (fvInput view') }
+      isInvalid = isJust (fvErrors view)
+  in
+  [whamlet|
+  <div_ :isInvalid:.is-invalid>
+  $case formLayout
+    $of BootstrapBasicForm
+      $if fvId view /= bootstrapSubmitId
+        <label for=#{fvId view}>#{fvLabel view}
+      ^{fvInput view}
+      ^{helpWidget view}
+    $of BootstrapInlineForm
+      $if fvId view /= bootstrapSubmitId
+        <label .sr-only for=#{fvId view}>#{fvLabel view}
+      ^{fvInput view}
+      ^{helpWidget view}
+    $of BootstrapHorizontalForm labelOffset labelSize inputOffset inputSize
+      $if fvId view /= bootstrapSubmitId
+        <div .row>
+          <label
+            .#{toOffset labelOffset}
+            .#{toColumn labelSize}
+            for=#{fvId view}>#{fvLabel view}
+          <div .#{toOffset inputOffset} .#{toColumn inputSize}>
+            ^{fvInput view}
+            ^{helpWidget view}
+      $else
+        <div
+          .#{toOffset (addGO inputOffset (addGO labelOffset labelSize))}
+          .#{toColumn inputSize}>
           ^{fvInput view}
           ^{helpWidget view}
-    $else
-      <div
-        .#{toOffset (addGO inputOffset (addGO labelOffset labelSize))}
-        .#{toColumn inputSize}>
-        ^{fvInput view}
-        ^{helpWidget view}
-|]
+  |]
 
 -- | 入力されたフィールドがcheck形式である必要があるか判定する
 -- HTMLの内容を`Monad`の範囲で見る方法が分からなかったため,ワークアラウンドとしてlabelの内容を見て判断します
@@ -166,7 +174,7 @@ inputTypeBoolOrCheckBox FieldView{fvLabel}
 helpWidget :: FieldView site -> WidgetFor site ()
 helpWidget view = [whamlet|
 $maybe err <- fvErrors view
-  <div .invalid-feedback style="display: block;">
+  <div .invalid-feedback">
     #{err}
 $maybe tt <- fvTooltip view
   <small .form-text .text-muted>
@@ -229,3 +237,4 @@ mbootstrapSubmit (BootstrapSubmit msg classes attrs) =
 -- 'bootstrapSubmit' outside 'renderBootstrap4'.
 bootstrapSubmitId :: Text
 bootstrapSubmitId = "b:ootstrap___unique__:::::::::::::::::submit-id"
+
